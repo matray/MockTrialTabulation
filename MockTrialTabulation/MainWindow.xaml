@@ -1,0 +1,178 @@
+﻿<Window x:Class="MockTrialTabulation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MockTrialTabulation"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="761.8" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="0*"/>
+        </Grid.RowDefinitions>
+        <TabControl>
+            <TabItem Header="Preliminary">
+                <TabControl Margin="0,0,0,-16.8">
+                    <TabItem Header="Teams">
+                        <StackPanel Margin="10">
+                            <Label Content="_Name:" Target="{Binding ElementName=txtTeamName}" />
+                            <TextBox x:Name="txtTeamName" />
+                            <Label Content="_Number:" Target="{Binding ElementName=txtTeamNumber}" />
+                            <TextBox x:Name="txtTeamNumber" />
+                            <Label Content="_Obfuscated Name:" Target="{Binding ElementName=txtObfuscatedName}" />
+                            <TextBox x:Name="txtObfuscatedName" />
+                            <Label Content="_Conflicts:" Target="{Binding ElementName=listViewTeamsForTeams}" Height="26.154" />
+                            <ListView x:Name="listViewTeamsForTeams" Height="207.006">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="300"/>
+                                        <GridViewColumn Header="Team Number" DisplayMemberBinding="{Binding team_number}" Width="150"/>
+                                        <GridViewColumn Header="Obfuscated Name" DisplayMemberBinding="{Binding obfuscated_name}" Width="300"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Button x:Name="buttonTeamsSave" Content="Save" Height="26.36" Click="buttonTeamsSave_Click"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Judges">
+                        <StackPanel Margin="0,0,20,20">
+                            <Button x:Name="buttonJudgesLoad" Content="Load" Height="26" Click="buttonJudgesLoad_Click" Margin="10,0,-0.4,0"/>
+                            <Label Content="_Name:" Target="{Binding ElementName=txtJudgesName}" Margin="10,0,0,0" />
+                            <TextBox x:Name="txtJudgesName" Margin="10,0,0,0" />
+                            <Label Content="_Conflicts:" Target="{Binding ElementName=listViewTeamsForJudges}" Margin="10,0,0,0" />
+                            <ListView x:Name="listViewTeamsForJudges" Height="294.4" Margin="10,0,0,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="300"/>
+                                        <GridViewColumn Header="Team Number" DisplayMemberBinding="{Binding team_number}" Width="150"/>
+                                        <GridViewColumn Header="Obfuscated Name" DisplayMemberBinding="{Binding obfuscated_name}" Width="300"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Button x:Name="buttonJudgesSave" Content="Save" Height="26.36" Margin="10,0,0,0" Click="buttonJudgesSave_Click"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Students" >
+                        <StackPanel Margin="0,0,20,20">
+                            <Button x:Name="buttonStudentsLoad" Content="Load" Height="26" Click="buttonStudentsLoad_Click" Margin="10,0,-0.4,0"/>
+                            <Label Content="_Name:" Target="{Binding ElementName=txtStudentName}" Margin="10,0,0,0" />
+                            <TextBox x:Name="txtStudentName" Margin="10,0,0,0" />
+                            <Label Content="_Side:" Target="{Binding ElementName=Side}" Margin="10,0,0,0" />
+                            <RadioButton x:Name="radioButtonPlaintiff1" Content="Plaintiff" GroupName="Side" Margin="10,0,0,0"/>
+                            <RadioButton x:Name="radioButtonDefense1" Content="Defense" GroupName="Side" Margin="10,0,0,0"/>
+                            <Label Content="_Team:" Target="{Binding ElementName=comboBoxTeams}" Margin="10,0,0,0" />
+                            <ComboBox x:Name="comboBoxTeams" Margin="10,0,0,0" DisplayMemberPath="name" SelectedValuePath="id" SelectedValue="{Binding Path=team}"/>
+                            <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Stretch" Height="215.2" Margin="10,0,0,0"/>
+                            <Button x:Name="buttonStudentsSave" Content="Save" Height="26.36" Margin="10,0,0,0" Click="buttonStudentsSave_Click"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="Running">
+                <TabControl Margin="0,0,0,3">
+                    <TabItem Header="Generate">
+                        <StackPanel>
+                            <Label x:Name="labelStateGenerate"  Content="_State:" Target="{Binding ElementName=comboBoxRoundNumber}" Margin="10,0,26,0" />
+                            <Button x:Name="buttonGenerate1" Content="Generate" Height="28" Margin="10,0" Click="buttonGenerate_Click"/>
+                            <ListView x:Name="listViewRoundPairings" Height="552.4" Margin="10,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Team A Name" DisplayMemberBinding="{Binding Path=team_a.name}" Width="150"/>
+                                        <GridViewColumn Header="Team B Name" DisplayMemberBinding="{Binding Path=team_b.name}" Width="150"/>
+                                        <GridViewColumn Header="Judge A Name" DisplayMemberBinding="{Binding Path=judge_a.name}" Width="150"/>
+                                        <GridViewColumn Header="Judge B Name" DisplayMemberBinding="{Binding Path=judge_b.name}" Width="150"/>
+                                        <GridViewColumn Header="Judge C Name" DisplayMemberBinding="{Binding Path=judge_c.name}" Width="150"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="View">
+                        <StackPanel>
+                            <Label x:Name="labelStateViewRound"  Content="_Round:" Target="{Binding ElementName=comboBoxRoundNumber}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxRoundNumber" Margin="10,0"/>
+                            <Button x:Name="buttonViewRound" Content="View" Height="28" Margin="10,0" Click="buttonViewRound_Click"/>
+                            <ListView x:Name="listViewSpecificRoundPairings" Height="552.4" Margin="10,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Team A Name" DisplayMemberBinding="{Binding Path=team_a.name}" Width="150"/>
+                                        <GridViewColumn Header="Team B Name" DisplayMemberBinding="{Binding Path=team_b.name}" Width="150"/>
+                                        <GridViewColumn Header="Judge A Name" DisplayMemberBinding="{Binding Path=judge_a.name}" Width="150"/>
+                                        <GridViewColumn Header="Judge B Name" DisplayMemberBinding="{Binding Path=judge_b.name}" Width="150"/>
+                                        <GridViewColumn Header="Judge C Name" DisplayMemberBinding="{Binding Path=judge_c.name}" Width="150"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Enter">
+                        <StackPanel Margin="0,0,0,7">
+                            <Label x:Name="labelStateEnter" Content="_Round:" Target="{Binding ElementName=comboBoxRoundNumber}" Margin="10,0,26,0" />
+                            <Button x:Name="buttonLoadRoundEntry" Content="Load" Height="28" Margin="10,0" Click="buttonLoadRoundEntry_Click"/>
+                            <ComboBox x:Name="comboBoxPairing" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="team_a" SelectedValue="{Binding Path=pretty_round}"/>
+                            <Button x:Name="buttonLoadSpecificRoundEntry" Content="Load" Height="28" Margin="10,0" Click="buttonLoadSpecificRoundEntry_Click"/>
+                            <Label Content="Judge" Target="{Binding ElementName=comboBoxJudges}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxJudges" Margin="10,0" DisplayMemberPath="name" SelectedValuePath="id" SelectedValue="{Binding Path=judge}"/>
+                            <Label Content="Score Team A" Target="{Binding ElementName=txtJudgesScoreTeamA}" Margin="10,0,26,0" />
+                            <TextBox x:Name="txtJudgesScoreTeamA" Margin="10,0" />
+                            <Label Content="Score Team B" Target="{Binding ElementName=txtJudgesScoreTeamB}" Margin="10,0,26,0" />
+                            <TextBox x:Name="txtJudgesScoreTeamB" Margin="10,0" />
+                            <Label Content="Witness 1" Target="{Binding ElementName=comboBoxWitness1}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxWitness1" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Witness 2" Target="{Binding ElementName=comboBoxWitness2}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxWitness2" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Witness 3" Target="{Binding ElementName=comboBoxWitness3}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxWitness3" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Witness 4" Target="{Binding ElementName=comboBoxWitness4}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxWitness4" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Attorney 1" Target="{Binding ElementName=comboBoxAttorney1}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxAttorney1" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Attorney 2" Target="{Binding ElementName=comboBoxAttorney2}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxAttorney2" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Attorney 3" Target="{Binding ElementName=comboBoxAttorney3}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxAttorney3" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Label Content="Attorney 4" Target="{Binding ElementName=comboBoxAttorney4}" Margin="10,0,26,0" />
+                            <ComboBox x:Name="comboBoxAttorney4" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
+                            <Button x:Name="buttonRoundSave" Content="Save" Height="27.2" Margin="10,0" Click="buttonRoundSave_Click"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="Tabulate">
+                <TabControl Margin="0,0,0,44">
+                    <TabItem Header="Tournament Winners" >
+                        <StackPanel Margin="0,0,0,-48">
+                            <Button x:Name="buttonTournamentWinnersLoad" Content="Load" Height="27.2" Margin="10,0" Click="buttonTournamentWinnersLoad_Click" />
+                            <ListView x:Name="listViewTournamentWinners" Height="552.4" Margin="10,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Path=team.name}" Width="150"/>
+                                        <GridViewColumn Header="Ballots" DisplayMemberBinding="{Binding Path=ballots}" Width="150"/>
+                                        <GridViewColumn Header="Combined Strength" DisplayMemberBinding="{Binding Path=combined_strength}" Width="150"/>
+                                        <GridViewColumn Header="Point Differential" DisplayMemberBinding="{Binding Path=point_differntial}" Width="150"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Personal Winners" >
+                        <StackPanel>
+                            <Button x:Name="buttonPersonalWinners" Content="Load" Height="27.2" Margin="10,0" Click="buttonPersonalWinners_Click"/>
+                            <ListView x:Name="listViewPersonalWinners" Height="552.4" Margin="10,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=student.name}" Width="150"/>
+                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Path=team.name}" Width="150"/>
+                                        <GridViewColumn Header="Side" DisplayMemberBinding="{Binding Path=student.side}" Width="150"/>
+                                        <GridViewColumn Header="Points" DisplayMemberBinding="{Binding Path=points}" Width="150"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
