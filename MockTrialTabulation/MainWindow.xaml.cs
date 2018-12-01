@@ -28,23 +28,8 @@ namespace MockTrialTabulation
         private state state = state.PRELIMMINARY;
         private bool winners_loaded = false;
         private bool personal_winners_loaded = false;
-        private bool prompted = false;
         public MainWindow()
         {
-            if (!prompted)
-            {
-                prompted = true;
-                MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Do you want to start with a fresh database?", "Clear and start fresh", System.Windows.MessageBoxButton.YesNo);
-                if (messageBoxResult == MessageBoxResult.Yes)
-                {
-                    if (File.Exists(Database.Database.pathname))
-                    {
-                        database.Close();
-                        File.Delete(Database.Database.pathname);
-                        database = new Database.Database();
-                    }
-                }
-            }
             List<team> teams = database.GetTeams();
             var state = database.GetState();
             this.state = state;
@@ -401,7 +386,7 @@ namespace MockTrialTabulation
                     judges_man = 0;
                 }
                 pairings = new List<round>();
-                List<judge> judges = database.GetJudges();
+                List<judge> judges = database.GetJudges(1);
                 shuffled_teams = Shuffle(teams);
                 var team_stack = new Stack<team>(teams);
                 Int64 iterations = 0;
@@ -569,7 +554,7 @@ namespace MockTrialTabulation
                     judges_man = 0;
                 }
                 pairings = new List<round>();
-                List<judge> judges = database.GetJudges();
+                List<judge> judges = database.GetJudges(2);
                 for (int i = 0; i < was_b.Count; i++)
                 {
                     bool conflict = true;
@@ -778,7 +763,7 @@ namespace MockTrialTabulation
                     judges_man = 0;
                 }
                 pairings = new List<round>();
-                List<judge> judges = database.GetJudges();
+                List<judge> judges = database.GetJudges(3);
                 for (int i = 0; i < was_b.Count; i++)
                 {
                     bool conflict = true;
@@ -974,7 +959,7 @@ namespace MockTrialTabulation
                     judges_man = 0;
                 }
                 pairings = new List<round>();
-                List<judge> judges = database.GetJudges();
+                List<judge> judges = database.GetJudges(4);
                 for (int i = 0; i < was_b.Count; i++)
                 {
                     bool conflict = true;
@@ -1104,33 +1089,51 @@ namespace MockTrialTabulation
                 Warn("Pairings", "Need an even number of teams for pairings");
                 return;
             }
-            var judges = database.GetJudges();
-            if (teams.Count / 2 > judges.Count)
-            {
-                Warn("Pairings", "Not enough judges to make pairings");
-                return;
-            }
             List<round> pairings;
             Int64 round_number = 0;
             if (this.state == state.PRELIMMINARY)
             {
-                pairings = Round1Pairings(teams, judges);
                 round_number = 1;
+                var judges = database.GetJudges(round_number);
+                if (teams.Count / 2 > judges.Count)
+                {
+                    Warn("Pairings", "Not enough judges to make pairings");
+                    return;
+                }
+                pairings = Round1Pairings(teams, judges);
             }
             else if (this.state == state.ROUND1)
             {
-                pairings = Round2Pairings(teams, judges);
                 round_number = 2;
+                var judges = database.GetJudges(round_number);
+                if (teams.Count / 2 > judges.Count)
+                {
+                    Warn("Pairings", "Not enough judges to make pairings");
+                    return;
+                }
+                pairings = Round1Pairings(teams, judges);
             }
             else if (this.state == state.ROUND2)
             {
-                pairings = Round3Pairings(teams, judges);
                 round_number = 3;
+                var judges = database.GetJudges(round_number);
+                if (teams.Count / 2 > judges.Count)
+                {
+                    Warn("Pairings", "Not enough judges to make pairings");
+                    return;
+                }
+                pairings = Round1Pairings(teams, judges);
             }
             else if (this.state == state.ROUND3)
             {
-                pairings = Round4Pairings(teams, judges);
                 round_number = 4;
+                var judges = database.GetJudges(round_number);
+                if (teams.Count / 2 > judges.Count)
+                {
+                    Warn("Pairings", "Not enough judges to make pairings");
+                    return;
+                }
+                pairings = Round1Pairings(teams, judges);
             }
             else
             {
@@ -1238,7 +1241,25 @@ namespace MockTrialTabulation
                 Warn("Judge Creation", "Maximum conflicts is 7");
                 return;
             }
-            database.InsertJudge(this.txtJudgesName.Text, known_conflict1, known_conflict2, known_conflict3, known_conflict4, known_conflict5, known_conflict6, known_conflict7);
+            if (conflicts.Count > 0)
+            {
+                this.listViewTeamsForJudges.SelectedIndex = -1;
+            }
+            var affinities = this.listViewJudgesForJudges.SelectedItems;
+            if (affinities.Count > 2)
+            {
+                Warn("Judge Creation", "Too many affinities specified, max is 2");
+                return;
+            }
+            if (affinities.Count > 0)
+            {
+                this.listViewJudgesForJudges.SelectedIndex = -1;
+            }
+            bool active_round_1 = this.Round1CheckBox.IsChecked ?? false;
+            bool active_round_2 = this.Round2CheckBox.IsChecked ?? false;
+            bool active_round_3 = this.Round3CheckBox.IsChecked ?? false;
+            bool active_round_4 = this.Round4CheckBox.IsChecked ?? false;
+            database.InsertJudge(this.txtJudgesName.Text, known_conflict1, known_conflict2, known_conflict3, known_conflict4, known_conflict5, known_conflict6, known_conflict7, active_round_1:active_round_1, active_round_2:active_round_2, active_round_3:active_round_3, active_round_4:active_round_4);
             Success("Judge Creation", this.txtJudgesName.Text);
         }
 
@@ -1246,6 +1267,8 @@ namespace MockTrialTabulation
         {
             List<team> teams = database.GetTeams();
             this.listViewTeamsForJudges.ItemsSource = teams;
+            List<judge> judges = database.GetJudges();
+            this.listViewJudgesForJudges.ItemsSource = judges;
         }
 
         private void buttonTeamsSave_Click(object sender, RoutedEventArgs e)
@@ -1351,7 +1374,9 @@ namespace MockTrialTabulation
             }
             this.comboBoxJudges.ItemsSource = judges;
             List<student> team_a_students = database.GetStudentsFromTeamID(pairing.team_a.id);
+            team_a_students = team_a_students.Where(x => x.side == "Plaintiff").ToList();
             List<student> team_b_students = database.GetStudentsFromTeamID(pairing.team_b.id);
+            team_b_students = team_b_students.Where(x => x.side == "Defense").ToList();
             List<pretty_student> all_students = new List<pretty_student>();
             foreach (student student in team_a_students)
             {
@@ -1464,6 +1489,17 @@ namespace MockTrialTabulation
                 pretty_rounds.Add(RoundToPrettyRound(round));
             }
             this.listViewSpecificRoundPairings.ItemsSource = pretty_rounds;
+        }
+
+        private void buttonLoadAMTATeamSelection_Click(object sender, RoutedEventArgs e)
+        {
+            List<team> teams = database.GetTeams();
+            this.comboBoxAMTATeamSelection.ItemsSource = teams;
+        }
+
+        private void buttonLoadSpecificAMTATeamSelection_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

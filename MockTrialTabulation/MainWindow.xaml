@@ -40,13 +40,41 @@
                             <Button x:Name="buttonJudgesLoad" Content="Load" Height="26" Click="buttonJudgesLoad_Click" Margin="10,0,-0.4,0"/>
                             <Label Content="_Name:" Target="{Binding ElementName=txtJudgesName}" Margin="10,0,0,0" />
                             <TextBox x:Name="txtJudgesName" Margin="10,0,0,0" />
+                            <CheckBox x:Name="Round1CheckBox" Content="Round1" Margin="10,0,0,0"/>
+                            <CheckBox x:Name="Round2CheckBox" Content="Round2" Margin="10,0,0,0"/>
+                            <CheckBox x:Name="Round3CheckBox" Content="Round3" Margin="10,0,0,0"/>
+                            <CheckBox x:Name="Round4CheckBox" Content="Round4" Margin="10,0,0,0" />
                             <Label Content="_Conflicts:" Target="{Binding ElementName=listViewTeamsForJudges}" Margin="10,0,0,0" />
-                            <ListView x:Name="listViewTeamsForJudges" Height="294.4" Margin="10,0,0,0">
+                            <ListView x:Name="listViewTeamsForJudges" Height="200" Margin="10,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <ListView.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform AngleX="0.193"/>
+                                        <RotateTransform/>
+                                        <TranslateTransform X="0.497"/>
+                                    </TransformGroup>
+                                </ListView.RenderTransform>
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="300"/>
                                         <GridViewColumn Header="Team Number" DisplayMemberBinding="{Binding team_number}" Width="150"/>
                                         <GridViewColumn Header="Obfuscated Name" DisplayMemberBinding="{Binding obfuscated_name}" Width="300"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Label Content="_Affinity:" Target="{Binding ElementName=listViewJudgesForJudges}" Margin="10,0,0,0" />
+                            <ListView x:Name="listViewJudgesForJudges" Height="200" Margin="10,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <ListView.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform AngleX="0.193"/>
+                                        <RotateTransform/>
+                                        <TranslateTransform X="0.497"/>
+                                    </TransformGroup>
+                                </ListView.RenderTransform>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="500"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -96,8 +124,8 @@
                             <ListView x:Name="listViewSpecificRoundPairings" Height="552.4" Margin="10,0">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Team A Name" DisplayMemberBinding="{Binding Path=team_a.name}" Width="150"/>
-                                        <GridViewColumn Header="Team B Name" DisplayMemberBinding="{Binding Path=team_b.name}" Width="150"/>
+                                        <GridViewColumn Header="Plaintiff Team" DisplayMemberBinding="{Binding Path=team_a.obfuscated_name}" Width="150"/>
+                                        <GridViewColumn Header="Defense Team" DisplayMemberBinding="{Binding Path=team_b.obfuscated_name}" Width="150"/>
                                         <GridViewColumn Header="Judge A Name" DisplayMemberBinding="{Binding Path=judge_a.name}" Width="150"/>
                                         <GridViewColumn Header="Judge B Name" DisplayMemberBinding="{Binding Path=judge_b.name}" Width="150"/>
                                         <GridViewColumn Header="Judge C Name" DisplayMemberBinding="{Binding Path=judge_c.name}" Width="150"/>
@@ -135,6 +163,13 @@
                             <Label Content="Attorney 4" Target="{Binding ElementName=comboBoxAttorney4}" Margin="10,0,26,0" />
                             <ComboBox x:Name="comboBoxAttorney4" Margin="10,0" DisplayMemberPath="pretty" SelectedValuePath="student" SelectedValue="{Binding Path=pretty_student}"/>
                             <Button x:Name="buttonRoundSave" Content="Save" Height="27.2" Margin="10,0" Click="buttonRoundSave_Click"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="AMTA Card View">
+                        <StackPanel Margin="0,0,0,7">
+                            <Button x:Name="buttonLoadAMTATeamSelection" Content="Load" Height="28" Margin="10,0" Click="buttonLoadAMTATeamSelection_Click"/>
+                            <ComboBox x:Name="comboBoxAMTATeamSelection" Margin="10,0,0,0" DisplayMemberPath="name" SelectedValuePath="id" SelectedValue="{Binding Path=team}"/>
+                            <Button x:Name="buttonLoadSpecificAMTATeamSelection" Content="Load" Height="28" Margin="10,0" Click="buttonLoadSpecificAMTATeamSelection_Click"/>
                         </StackPanel>
                     </TabItem>
                 </TabControl>

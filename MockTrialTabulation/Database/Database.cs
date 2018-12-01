@@ -73,6 +73,12 @@ namespace MockTrialTabulation.Database
         public Int64 known_conflict8 { get; set; }
         public Int64 known_conflict9 { get; set; }
         public Int64 known_conflict10 { get; set; }
+        public bool active_round_1 { get; set; }
+        public bool active_round_2 { get; set; }
+        public bool active_round_3 { get; set; }
+        public bool active_round_4 { get; set; }
+        public Int64 affinity_1 { get; set; }
+        public Int64 affinity_2 { get; set; }
     }
     class pretty_student
     {
@@ -192,6 +198,12 @@ namespace MockTrialTabulation.Database
                 known_conflict8 INTEGER,
                 known_conflict9 INTEGER,
                 known_conflict10 INTEGER,
+                active_round_1 INTEGER,
+                active_round_2 INTEGER,
+                active_round_3 INTEGER,
+                active_round_4 INTEGER,
+                affinity_1 INTEGER,
+                affinity_2 INTEGER,
                 FOREIGN KEY(known_conflict1) REFERENCES teams(id),
                 FOREIGN KEY(known_conflict2) REFERENCES teams(id),
                 FOREIGN KEY(known_conflict3) REFERENCES teams(id),
@@ -201,7 +213,9 @@ namespace MockTrialTabulation.Database
                 FOREIGN KEY(known_conflict7) REFERENCES teams(id),
                 FOREIGN KEY(known_conflict8) REFERENCES teams(id),
                 FOREIGN KEY(known_conflict9) REFERENCES teams(id),
-                FOREIGN KEY(known_conflict10) REFERENCES teams(id)
+                FOREIGN KEY(known_conflict10) REFERENCES teams(id),
+                FOREIGN KEY(affinity_1) REFERENCES judges(id),
+                FOREIGN KEY(affinity_2) REFERENCES judges(id)
             );
             CREATE TABLE IF NOT EXISTS
             students (
@@ -670,7 +684,37 @@ namespace MockTrialTabulation.Database
             {
                 conflict10 = Convert.ToInt64(reader["known_conflict10"]);
             }
-            return new judge { id = id, name = reader.GetString(1), known_conflict1 = conflict1, known_conflict2 = conflict2, known_conflict3 = conflict3, known_conflict4 = conflict4, known_conflict5 = conflict5, known_conflict6 = conflict6, known_conflict7 = conflict7, known_conflict8 = conflict8, known_conflict9 = conflict9, known_conflict10 = conflict10 };
+            bool active_round_1 = false;
+            if (reader["active_round_1"].GetType() != typeof(System.DBNull))
+            {
+                active_round_1 = Convert.ToInt64(reader["active_round_1"]) == 0 ? false : true;
+            }
+            bool active_round_2 = false;
+            if (reader["active_round_2"].GetType() != typeof(System.DBNull))
+            {
+                active_round_2 = Convert.ToInt64(reader["active_round_2"]) == 0 ? false : true;
+            }
+            bool active_round_3 = false;
+            if (reader["active_round_3"].GetType() != typeof(System.DBNull))
+            {
+                active_round_3 = Convert.ToInt64(reader["active_round_3"]) == 0 ? false : true;
+            }
+            bool active_round_4 = false;
+            if (reader["active_round_4"].GetType() != typeof(System.DBNull))
+            {
+                active_round_4 = Convert.ToInt64(reader["active_round_4"]) == 0 ? false : true;
+            }
+            Int64 affinity_1 = 0;
+            if (reader["affinity_1"].GetType() != typeof(System.DBNull))
+            {
+                affinity_1 = Convert.ToInt64(reader["affinity_1"]);
+            }
+            Int64 affinity_2 = 0;
+            if (reader["affinity_2"].GetType() != typeof(System.DBNull))
+            {
+                affinity_2 = Convert.ToInt64(reader["affinity_2"]);
+            }
+            return new judge { id = id, name = reader.GetString(1), known_conflict1 = conflict1, known_conflict2 = conflict2, known_conflict3 = conflict3, known_conflict4 = conflict4, known_conflict5 = conflict5, known_conflict6 = conflict6, known_conflict7 = conflict7, known_conflict8 = conflict8, known_conflict9 = conflict9, known_conflict10 = conflict10, active_round_1 = active_round_1, active_round_2=active_round_2, active_round_3=active_round_3, active_round_4=active_round_4, affinity_1=affinity_1, affinity_2=affinity_2};
         }
 
         public List<team> GetTeams()
@@ -691,10 +735,10 @@ namespace MockTrialTabulation.Database
             return teams;
         }
 
-        public List<judge> GetJudges()
+        public List<judge> GetJudges(Int64 round = 0)
         {
             List<judge> judges= new List<judge>();
-            String query = "SELECT * FROM judges";
+            String query = round == 0 ? "SELECT * FROM judges" : String.Format("SELECT * FROM judges WHERE active_round_{0} = 1", round);
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
                 using (SQLiteDataReader reader = command.ExecuteReader())
@@ -844,9 +888,17 @@ namespace MockTrialTabulation.Database
                 }
             }
         }
-        public void InsertJudge(String name, Int64 known_conflict1 = 0, Int64 known_conflict2 = 0, Int64 known_conflict3 = 0, Int64 known_conflict4 = 0, Int64 known_conflict5 = 0, Int64 known_conflict6 = 0, Int64 known_conflict7 = 0, Int64 known_conflict8 = 0, Int64 known_conflict9 = 0, Int64 known_conflict10 = 0)
+        public Int64 BoolToInt(bool value)
         {
-            String command = String.Format("INSERT INTO judges (name, known_conflict1, known_conflict2, known_conflict3, known_conflict4, known_conflict5, known_conflict6, known_conflict7, known_conflict8, known_conflict9, known_conflict10) VALUES ('{0}', {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10})", name, NullForZero(known_conflict1), NullForZero(known_conflict2), NullForZero(known_conflict3), NullForZero(known_conflict4), NullForZero(known_conflict5), NullForZero(known_conflict6), NullForZero(known_conflict7), NullForZero(known_conflict8), NullForZero(known_conflict9), NullForZero(known_conflict10));
+            if (value)
+            {
+                return 1;
+            }
+            return 0;
+        }
+        public void InsertJudge(String name, Int64 known_conflict1 = 0, Int64 known_conflict2 = 0, Int64 known_conflict3 = 0, Int64 known_conflict4 = 0, Int64 known_conflict5 = 0, Int64 known_conflict6 = 0, Int64 known_conflict7 = 0, Int64 known_conflict8 = 0, Int64 known_conflict9 = 0, Int64 known_conflict10 = 0, bool active_round_1=false, bool active_round_2 = false, bool active_round_3=false, bool active_round_4=false, Int64 affinity_1=0, Int64 affinity_2=0)
+        {
+            String command = String.Format("INSERT INTO judges (name, known_conflict1, known_conflict2, known_conflict3, known_conflict4, known_conflict5, known_conflict6, known_conflict7, known_conflict8, known_conflict9, known_conflict10, active_round_1, active_round_2, active_round_3, active_round_4, affinity_1, affinity_2) VALUES ('{0}', {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16})", name, NullForZero(known_conflict1), NullForZero(known_conflict2), NullForZero(known_conflict3), NullForZero(known_conflict4), NullForZero(known_conflict5), NullForZero(known_conflict6), NullForZero(known_conflict7), NullForZero(known_conflict8), NullForZero(known_conflict9), NullForZero(known_conflict10), BoolToInt(active_round_1), BoolToInt(active_round_2), BoolToInt(active_round_3), BoolToInt(active_round_4), NullForZero(affinity_1), NullForZero(affinity_2));
             SafeTransaction(command);
         }
 
